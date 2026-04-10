@@ -1,4 +1,4 @@
-import AdminSidebar from "@/components/adminsidebar"
+import AdminSidebar from  "@/components/adminsidebar"
 
 export const metadata = {
    title: 'Admin Services - PDAM Malang',

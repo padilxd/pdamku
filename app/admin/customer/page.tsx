@@ -3,22 +3,32 @@ import { GetCustomerApi } from "@/services/customer";
 import FormCustomer from "./formcustomer";
 import DropCustomerButton from "./dropCustomer";
 import { GetService } from "@/services/service";
+import Searching from "../bills/searching";
+import Pagination from "@/components/pagination";
+type Props = {
+    searchParams: Promise<{
+        page?:number
+        quantity?:number
+        search?:string 
+    }>
+}
 
-const CustomerPage = async () => {
-    const response = await GetCustomerApi();
+const CustomerPage = async (prop:Props) => {
+    const searchParams = await prop.searchParams;
+    const {page = 1, quantity = 10, search = ""} = searchParams;
+    const response = await GetCustomerApi({page, quantity, search});
     const serviceList = await GetService();
 
     return (
         <div className="min-h-screen bg-linear-to-br from-gray-950 via-gray-900 to-gray-800 p-6 text-white">
-            
             <h1 className="text-3xl font-bold mb-2">Customer Page</h1>
             <p className="text-gray-400 mb-6">Welcome to the customer page!</p>
-
             <FormCustomer 
                 label="Tambah Customer" 
                 className="mb-6 bg-indigo-600 hover:bg-indigo-700 transition text-white px-4 py-2 rounded-lg shadow"
                 serviceList={serviceList.data}
             />
+            <Searching search={search} />
 
             <div className="overflow-x-auto bg-gray-900/70 backdrop-blur-xl border border-gray-700 rounded-2xl shadow-2xl">
                 

@@ -51,8 +51,8 @@ export default function AdminSidebar({children}: AdminSidebarProps) {
           <Link href="/admin/customer" className="block p-2 rounded hover:bg-gray-700">
             Customers
           </Link>
-          <Link href="/admin/products" className="block p-2 rounded hover:bg-gray-700">
-            Products
+          <Link href="/admin/bills" className="block p-2 rounded hover:bg-gray-700">
+            Bills
           </Link>
           <Link href="/admin/settings" className="block p-2 rounded hover:bg-gray-700">
             Settings

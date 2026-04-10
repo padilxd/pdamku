@@ -1,44 +1,43 @@
-import { APP_KEY, BASE_API_URL } from '@/global';
-import { getServerCookie } from '@/lib/server-cookies';
-import { Customer } from '@/types/customer';
-import axios from 'axios';
+import { APP_KEY, BASE_API_URL } from "@/global"
+import { getServerCookie } from "@/lib/server-cookies"
+import { Bill } from "@/types/bill"
+import axios, { AxiosError } from "axios"
 type ResponseData = {
     status: boolean
     message: string
-    data?: Customer[]
+    data?: Bill[]
     count?: number
 }
-export const GetCustomerApi = async (params:{page?: number; quantity?: number; search?: string }): Promise<ResponseData> => {
+export const GetBill = async (params: { page?: number; quantity?: number; search?: string }): Promise<ResponseData> => {
     try {
         const token = await getServerCookie("token");
-        const response = await axios.get(`${BASE_API_URL}/customers?page=${params.page}&quantity=${params.quantity}&search=${params.search}`, { 
-            method: 'GET',
+        const response = await axios.get(`${BASE_API_URL}/bills?page=${params.page || 1}&quantity=${params.quantity || 10}&search=${params.search || ''}`, {
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
                 'app-key': `${APP_KEY}`,
                 'authorization': `Bearer ${token}`
-            },
-        });
-        const data = response.data;
+            }
+        })
+        const data = response.data
         return {
             status: true,
-            message: "Customer data fetched successfully",
+            message: "Bills fetched successfully",
             data: data.data,
             count: data.count
-        };
+        }
     } catch (error) {
         return {
             status: false,
-            message: "Failed to fetch customer data",
+            message: "Failed to fetch services",
         };
-    }   
-} 
-export const CreateUpdateCustomer = async (id: number | undefined, customerData: { name: string, customer_number: string, phone: string, address: string, service_id: number, username: string, password: string }): Promise<ResponseData> => {
+    }
+}
+export const CreateUpdateBill = async (id: number | undefined, billData: { customer_id: number, month: number, year: number, measurement_number: string, usage_value: number, }): Promise<ResponseData> => {
     try {
         const token = await getServerCookie("token");
         let response;
         if (id === undefined) {
-             response = await axios.post(`${BASE_API_URL}/customers`, customerData, {
+             response = await axios.post(`${BASE_API_URL}/bills`, billData, {
                 headers: {
                     "Content-Type": "application/json",
                     'app-key': `${APP_KEY}`,
@@ -46,7 +45,7 @@ export const CreateUpdateCustomer = async (id: number | undefined, customerData:
                 }
             })
         } else {
-              response = await axios.patch(`${BASE_API_URL}/customers/${id}`, customerData, {
+              response = await axios.patch(`${BASE_API_URL}/bills/${id}`, billData, {
             headers: {
                 "Content-Type": "application/json",
                 'app-key': `${APP_KEY}`,
@@ -63,17 +62,23 @@ export const CreateUpdateCustomer = async (id: number | undefined, customerData:
             data: data.data
         }
     }
-    catch (error : any) {
+    catch (error: unknown) {
+          if (error instanceof AxiosError) {
+            return {
+                status: false,
+                message: error.response?.data?.message || `Failed to ${id ? "update" : "add"} service.`,
+            };
+        }
         return {
             status: false,
-            message: `Failed to ${id ? "update" : "add"} customer. ${error.response.data.message || "Unknown error"}`,
+            message: `Failed to ${id ? "update" : "add"} Bill.`,
         };
     }
 }
-export const DropCustomer = async (customerId: number): Promise<ResponseData> => {
+export const DropBill = async (billId: number): Promise<ResponseData> => {
     try {
         const token = await getServerCookie("token");
-        const response = await axios.delete(`${BASE_API_URL}/customers/${customerId}`, {
+        const response = await axios.delete(`${BASE_API_URL}/bills/${billId}`, {
             headers: {
                 "Content-Type": "application/json",
                 'app-key': `${APP_KEY}`,
@@ -83,14 +88,16 @@ export const DropCustomer = async (customerId: number): Promise<ResponseData> =>
         const data = response.data
         return {
             status: true,
-            message: "Customer deleted successfully",
+            message: "Bill deleted successfully",
             data: data.data
         }
     }
     catch (error) {
         return {
             status: false,
-            message: "Failed to delete customer",
+            message: "Failed to delete bill",
         };
     }
 }
+
+

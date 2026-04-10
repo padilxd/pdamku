@@ -1,7 +1,7 @@
 import AdminSidebar from   "@/components/adminsidebar"
 
 export const metadata = {
-   title: 'Customer Page | PDAM',
+   title: 'Billing | PDAM',
    description: 'Praktikum SMK Telkom Malang',
 }
 type PropsLayout = {
